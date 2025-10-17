@@ -9,13 +9,13 @@ import L from "leaflet";
 
 type Stan = {
   id: string;
-  adresa: string;
-  kvadratura: number;
-  svrha: string;
-  cijena: number;
+  address: string;
+  squareMeters: number;
+  purpose: string;
+  price: number;
   lat: number;
   lng: number;
-  cijenaPoruka: string;
+  priceMessage: string;
 };
 
 export default function StanoviMapa() {
@@ -34,7 +34,7 @@ export default function StanoviMapa() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Da li ste sigurni da želite obrisati ovaj stan?")) return;
+    // if (!confirm("Da li ste sigurni da želite obrisati ovaj stan?")) return;
     try {
       await deleteDoc(doc(db, "stanovi", id));
       setStanovi((prevStanovi) => prevStanovi.filter((stan) => stan.id !== id));
@@ -81,14 +81,18 @@ export default function StanoviMapa() {
             >
               <Popup>
                 <div className="popup">
-                  <h3>{stan.adresa}</h3> <br />
+                  <h3>{stan.address}</h3> <br />
                   <span>
-                    <b>Povrsina</b>: {stan.kvadratura} m²
+                    <b>Povrsina</b>: {stan.squareMeters} m²
                   </span>{" "}
                   <br />
-                  <span> {stan.svrha}</span> <br />
                   <span>
-                    <b>{stan.cijenaPoruka}</b>: {stan.cijena} KM
+                    {" "}
+                    <b>Svrha</b>: {stan.purpose}
+                  </span>{" "}
+                  <br />
+                  <span>
+                    <b>{stan.priceMessage}</b>: {stan.price} KM
                   </span>
                   <button
                     title="Obrisi"

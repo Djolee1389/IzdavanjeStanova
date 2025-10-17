@@ -1,15 +1,17 @@
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { db } from "../Firebase";
 import { collection, addDoc } from "firebase/firestore";
+import { useState } from "react";
+import { LoadingSpinner } from "../components/LoadingSpinner";
 
 type Inputs = {
-  adresa: string;
-  kvadratura: number;
-  cijena: number;
-  svrha: "Izdavanje" | "Na prodaju";
+  address: string;
+  squareMeters: number;
+  price: number;
+  purpose: "Izdavanje" | "Na prodaju";
 };
 
-export default function MainPage() {
+export default function DodajStan() {
   const {
     register,
     handleSubmit,
@@ -18,15 +20,18 @@ export default function MainPage() {
     watch,
   } = useForm<Inputs>();
 
-  const svrha = watch("svrha");
-  const cijenaLabel =
-    svrha === "Izdavanje" ? "Mjesecna cijena" : "Prodajna cijena";
+  const purpose = watch("purpose");
+  const priceLabel =
+    purpose === "Izdavanje" ? "Mjesecna cijena" : "Prodajna cijena";
+
+  const [loading, setLoading] = useState(false);
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
+      setLoading(true);
       const res = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          data.adresa
+          data.address
         )}`
       );
       const locations = await res.json();
@@ -39,17 +44,18 @@ export default function MainPage() {
       const { lat, lon } = locations[0];
 
       await addDoc(collection(db, "stanovi"), {
-        adresa: data.adresa,
-        kvadratura: data.kvadratura,
-        cijena: data.cijena,
-        svrha: data.svrha,
+        address: data.address,
+        squareMeters: data.squareMeters,
+        price: data.price,
+        purpose: data.purpose,
         lat: parseFloat(lat),
         lng: parseFloat(lon),
-        datum: new Date().toISOString(),
-        cijenaPoruka: cijenaLabel,
+        publishDate: new Date().toISOString(),
+        priceMessage: priceLabel,
       });
       // alert("Stan uspješno dodat u bazu!");
       reset();
+      setLoading(false);
     } catch (e) {
       console.error("Greška pri dodavanju:", e);
       alert("Greška pri upisu u bazu.");
@@ -64,50 +70,57 @@ export default function MainPage() {
         <input
           id="f-adresa"
           placeholder="Adresa"
-          {...register("adresa", { required: "Adresa je obavezna" })}
+          {...register("address", { required: "Adresa je obavezna" })}
         />
-        {errors.adresa && <span>{errors.adresa.message}</span>}
+        {errors.address && <span>{errors.address.message}</span>}
 
-        <label htmlFor="f-kvadratura">Kvadratura</label>
+        <label htmlFor="f-squareMeters">Kvadratura</label>
         <input
-          id="f-kvadratura"
+          id="f-squareMeters"
           placeholder="m²"
           type="number"
           step="any"
-          {...register("kvadratura", {
+          {...register("squareMeters", {
             required: "Kvadratura je obavezna",
             valueAsNumber: true,
             min: { value: 1, message: "Kvadratura mora biti pozitivna" },
           })}
         />
-        {errors.kvadratura && <span>{errors.kvadratura.message}</span>}
+        {errors.squareMeters && <span>{errors.squareMeters.message}</span>}
 
-        <label htmlFor="f-svrha">Svrha</label>
+        <label htmlFor="f-purpose">Svrha</label>
         <select
-          id="f-svrha"
-          {...register("svrha", { required: "Svrha je obavezna" })}
+          id="f-purpose"
+          {...register("purpose", { required: "Svrha je obavezna" })}
         >
           <option value="">Odaberite svrhu</option>
           <option value="Izdavanje">Izdavanje</option>
           <option value="Na prodaju">Prodaja</option>
         </select>
-        {errors.svrha && <span>{errors.svrha.message}</span>}
+        {errors.purpose && <span>{errors.purpose.message}</span>}
 
-        <label htmlFor="f-cijena">{cijenaLabel}</label>
+        <label htmlFor="f-price">{priceLabel}</label>
         <input
-          id="f-cijena"
+          id="f-price"
           placeholder="KM"
           type="number"
           step="any"
-          {...register("cijena", {
+          {...register("price", {
             required: "Cijena je obavezna",
             valueAsNumber: true,
             min: { value: 1, message: "Cijena mora biti pozitivna" },
           })}
         />
-        {errors.cijena && <span>{errors.cijena.message}</span>}
+        {errors.price && <span>{errors.price.message}</span>}
 
-        <input type="submit" value={"Dodaj"} />
+        {loading ? (
+          <div className="loading-container">
+            <LoadingSpinner />
+            <p>Dodavanje u toku...</p>
+          </div>
+        ) : (
+          <input type="submit" value="Dodaj" disabled={loading} />
+        )}
       </form>
     </div>
   );

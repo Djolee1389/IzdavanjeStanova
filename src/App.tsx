@@ -1,18 +1,19 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, Navigate } from "react-router-dom";
 import Mapa from "./pages/StanoviMapa.tsx";
-import MainPage from "./pages/MainPage.tsx";
+import DodajStan from "./pages/DodajStan.tsx";
 
 function App() {
   return (
     <>
       <nav>
-        <Link to={"/"}>Mapa</Link>
-        <Link to={"/MainPage"}>Dodaj stan</Link>
+        <Link to={"/stanovi-mapa"}>Mapa</Link>
+        <Link to={"/dodaj-stan"}>Dodaj stan</Link>
       </nav>
 
       <Routes>
-        <Route path="/" element={<Mapa />} />
-        <Route path="/MainPage" element={<MainPage />} />
+        <Route path="/" element={<Navigate to="/stanovi-mapa" replace />} />
+        <Route path="/stanovi-mapa" element={<Mapa />} />
+        <Route path="/dodaj-stan" element={<DodajStan />} />
       </Routes>
     </>
   );

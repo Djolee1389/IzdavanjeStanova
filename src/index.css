@@ -75,6 +75,7 @@ form {
   flex-direction: column;
   align-items: center;
   width: 400px;
+  height: 500px;
   margin: auto;
   background-color: white;
   padding: 10px 15px;
@@ -131,7 +132,7 @@ input[type="submit"] {
   background-color: rgba(121, 215, 241, 0.6);
   width: 40%;
   height: 50px;
-  margin-top: 20px;
+  margin-top: 30px;
   transition: all 0.2s;
   &:hover {
     transform: scale(1.05);
@@ -200,3 +201,37 @@ form select option {
   border-radius: 5px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
 }
+
+.loader {
+  aspect-ratio: 1;
+  height: 35px;
+  border: 5px solid #fff;
+  border-bottom-color: #dca898;
+  border-radius: 50%;
+  display: inline-block;
+  box-sizing: border-box;
+  margin-top: 10px;
+  animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.loading-container p {
+  font-size: 1rem;
+  color: #333;
+}
+
