@@ -1,6 +1,7 @@
 import { Routes, Route, Link, Navigate } from "react-router-dom";
-import Mapa from "./pages/StanoviMapa.tsx";
-import DodajStan from "./pages/DodajStan.tsx";
+import StanoviMapa from "./pages/Map.tsx";
+import DodajStan from "./pages/AddPlace.tsx";
+import "./styles/Nav.css";
 
 function App() {
   return (
@@ -12,7 +13,7 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Navigate to="/stanovi-mapa" replace />} />
-        <Route path="/stanovi-mapa" element={<Mapa />} />
+        <Route path="/stanovi-mapa" element={<StanoviMapa />} />
         <Route path="/dodaj-stan" element={<DodajStan />} />
       </Routes>
     </>

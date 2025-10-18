@@ -21,6 +21,7 @@ export default function DodajStan() {
   } = useForm<Inputs>();
 
   const purpose = watch("purpose");
+
   const priceLabel =
     purpose === "Izdavanje" ? "Mjesecna cijena" : "Prodajna cijena";
 
@@ -64,11 +65,11 @@ export default function DodajStan() {
 
   return (
     <div className="container">
-      <form onSubmit={handleSubmit(onSubmit)} id="forma1" autoComplete="off">
-        <p>PODACI</p>
-        <label htmlFor="f-adresa">Adresa</label>
+      <form onSubmit={handleSubmit(onSubmit)} id="form1" autoComplete="off">
+        <p className="form-title">PODACI</p>
+        <label htmlFor="f-address">Adresa</label>
         <input
-          id="f-adresa"
+          id="f-address"
           placeholder="Adresa"
           {...register("address", { required: "Adresa je obavezna" })}
         />

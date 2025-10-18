@@ -1,5 +1,8 @@
 :root {
-  --bcg-color: rgba(121, 215, 241, 0.3);
+  --bcg-color: rgba(121, 215, 241, 0.4);
+  --submit: rgba(121, 215, 241, 0.8);
+  --form-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+    rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 }
 
 * {
@@ -18,49 +21,7 @@ body {
   height: 100vh;
 }
 
-h1 {
-  font-size: 1.5em;
-  color: black;
-}
 
-nav {
-  display: flex;
-  background-color: transparent;
-  height: 9vh;
-  /* padding: 10px 25px; */
-  justify-content: center;
-  align-items: center;
-  background-color: white;
-}
-nav a {
-  color: black;
-  margin: 0 150px;
-  text-decoration: none;
-  font-weight: bold;
-  text-transform: uppercase;
-  transition: all 0.2s ease;
-  position: relative;
-}
-
-nav a::after {
-  content: "";
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: black;
-  transform: scaleX(0);
-  transition: all 0.2s;
-}
-
-nav a:hover {
-  transform: scale(1.1);
-}
-
-nav a:hover::after {
-  transform: scaleX(1);
-}
 
 .container {
   display: flex;
@@ -70,7 +31,7 @@ nav a:hover::after {
   background-color: rgba(0, 0, 0, 0.1);
 }
 
-form {
+#form1 {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -80,11 +41,10 @@ form {
   background-color: white;
   padding: 10px 15px;
   border-radius: 5px;
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
-    rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+  box-shadow: var(--form-shadow)
 }
 
-form span {
+span {
   font-size: 10px;
   color: red;
   align-self: baseline;
@@ -93,13 +53,13 @@ form span {
   margin-top: -4px;
 }
 
-form p {
+#form1 .form-title {
   font-size: 1.5rem;
   font-weight: bold;
   margin: 10px;
 }
 
-form label {
+label {
   font-size: 1rem;
   align-self: baseline;
   margin: 15px 10px -5px;
@@ -129,8 +89,8 @@ input:not([type="submit"]) {
 
 input[type="submit"] {
   cursor: pointer;
-  background-color: rgba(121, 215, 241, 0.6);
-  width: 40%;
+  background-color: var(--submit);
+  width: 50%;
   height: 50px;
   margin-top: 30px;
   transition: all 0.2s;
@@ -148,7 +108,7 @@ input[type="number"]::-webkit-inner-spin-button {
   margin: 0;
 }
 
-form select {
+select {
   width: 100%;
   height: 40px;
   margin: 10px 0;
@@ -167,7 +127,7 @@ form select {
     box-shadow: 0 0 5px rgba(81, 203, 238, 1);
   }
 }
-form select option {
+#form1 select option {
   padding: 10px;
   transition: all 0.2s ease;
   &:hover {
@@ -192,46 +152,17 @@ form select option {
 
 .map-container {
   height: 91vh;
-  width: 90%;
-  padding: 10px;
+  /* min-width: 80%; */
+  padding: 15px;
   margin: auto;
   border-radius: 5px;
+  position: relative;
+  display: flex;
+  gap: 30px;
 }
 .leaflet-container {
   border-radius: 5px;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
 }
 
-.loader {
-  aspect-ratio: 1;
-  height: 35px;
-  border: 5px solid #fff;
-  border-bottom-color: #dca898;
-  border-radius: 50%;
-  display: inline-block;
-  box-sizing: border-box;
-  margin-top: 10px;
-  animation: rotation 1s linear infinite;
-}
-
-@keyframes rotation {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-}
-
-.loading-container p {
-  font-size: 1rem;
-  color: #333;
-}
-
+/*---------------------------------------------------------------------------------*/

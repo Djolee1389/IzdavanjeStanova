@@ -6,6 +6,9 @@ import { FaTrash } from "react-icons/fa";
 import { db } from "../Firebase";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import SearchMap from "../components/SearchMap";
+import cityCoords from "../CityCoords.json";
+
 
 type Stan = {
   id: string;
@@ -54,13 +57,19 @@ export default function StanoviMapa() {
   return (
     <div className="map-container">
       <MapContainer
-        center={[44.7829, 17.2061]}
+        center={[cityCoords.banjaluka.lat, cityCoords.banjaluka.lng]}
         minZoom={12}
         maxZoom={18}
         zoom={13}
         maxBounds={[
-          [44.7187, 17.1013], // jugozapad
-          [44.8648, 17.3145], //  sjeveroistok
+          [
+            cityCoords.banjaluka.maxBounds[0][0],
+            cityCoords.banjaluka.maxBounds[0][1],
+          ], // jugozapad
+          [
+            cityCoords.banjaluka.maxBounds[1][0],
+            cityCoords.banjaluka.maxBounds[1][1],
+          ], //  sjeveroistok
         ]}
         style={{ height: "100%", width: "100%" }}
       >
@@ -82,18 +91,11 @@ export default function StanoviMapa() {
               <Popup>
                 <div className="popup">
                   <h3>{stan.address}</h3> <br />
-                  <span>
-                    <b>Povrsina</b>: {stan.squareMeters} m²
-                  </span>{" "}
+                  <b>Povrsina</b>: {stan.squareMeters} m²
                   <br />
-                  <span>
-                    {" "}
-                    <b>Svrha</b>: {stan.purpose}
-                  </span>{" "}
+                  <b>Svrha</b>: {stan.purpose}
                   <br />
-                  <span>
-                    <b>{stan.priceMessage}</b>: {stan.price} KM
-                  </span>
+                  <b>{stan.priceMessage}</b>: {stan.price} KM
                   <button
                     title="Obrisi"
                     onClick={() => handleDelete(stan.id)}
@@ -119,6 +121,8 @@ export default function StanoviMapa() {
             </Marker>
           ))}
       </MapContainer>
+
+      <SearchMap />
     </div>
   );
 }
