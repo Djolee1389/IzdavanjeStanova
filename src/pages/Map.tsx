@@ -1,14 +1,14 @@
 // src/pages/StanoviMapa.tsx
 import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import { FaTrash } from "react-icons/fa";
 import { db } from "../Firebase";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import type { LatLngTuple } from "leaflet"; 
 import SearchMap from "../components/SearchMap";
 import cityCoords from "../CityCoords.json";
-
 
 type Stan = {
   id: string;
@@ -21,8 +21,32 @@ type Stan = {
   priceMessage: string;
 };
 
+type CityKey = keyof typeof cityCoords;
+
+// Add type for city coordinates
+interface CityCoordinates {
+  lat: number;
+  lng: number;
+  maxBounds: [LatLngTuple, LatLngTuple];
+}
+
+function MapController({ city }: { city: CityKey }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (city && cityCoords[city]) {
+      const coords = cityCoords[city] as CityCoordinates;
+      map.setView([coords.lat, coords.lng], 13);
+      map.setMaxBounds([coords.maxBounds[0], coords.maxBounds[1]]);
+    }
+  }, [city, map]);
+
+  return null;
+}
+
 export default function StanoviMapa() {
   const [stanovi, setStanovi] = useState<Stan[]>([]);
+  const [selectedCity, setSelectedCity] = useState<CityKey>("banjaluka");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -47,6 +71,10 @@ export default function StanoviMapa() {
     }
   };
 
+  const handleCityChange = (city: CityKey) => {
+    setSelectedCity(city);
+  };
+
   const markerIcon = new L.Icon({
     iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
     iconSize: [25, 41],
@@ -57,22 +85,22 @@ export default function StanoviMapa() {
   return (
     <div className="map-container">
       <MapContainer
-        center={[cityCoords.banjaluka.lat, cityCoords.banjaluka.lng]}
+        center={
+          [
+            cityCoords[selectedCity].lat,
+            cityCoords[selectedCity].lng,
+          ] as LatLngTuple
+        }
         minZoom={12}
         maxZoom={18}
         zoom={13}
         maxBounds={[
-          [
-            cityCoords.banjaluka.maxBounds[0][0],
-            cityCoords.banjaluka.maxBounds[0][1],
-          ], // jugozapad
-          [
-            cityCoords.banjaluka.maxBounds[1][0],
-            cityCoords.banjaluka.maxBounds[1][1],
-          ], //  sjeveroistok
+          cityCoords[selectedCity].maxBounds[0] as LatLngTuple,
+          cityCoords[selectedCity].maxBounds[1] as LatLngTuple,
         ]}
         style={{ height: "100%", width: "100%" }}
       >
+        <MapController city={selectedCity} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -122,7 +150,7 @@ export default function StanoviMapa() {
           ))}
       </MapContainer>
 
-      <SearchMap />
+      <SearchMap onCityChange={handleCityChange} />
     </div>
   );
 }
