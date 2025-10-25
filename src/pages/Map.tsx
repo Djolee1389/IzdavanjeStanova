@@ -23,7 +23,6 @@ type Stan = {
 
 type CityKey = keyof typeof cityCoords;
 
-// Add type for city coordinates
 interface CityCoordinates {
   lat: number;
   lng: number;
