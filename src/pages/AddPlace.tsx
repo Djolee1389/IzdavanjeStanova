@@ -3,13 +3,7 @@ import { db } from "../Firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { useState, useEffect, useRef } from "react";
 import { LoadingSpinner } from "../components/LoadingSpinner";
-
-type Inputs = {
-  address: string;
-  squareMeters: number;
-  price: number;
-  purpose: "Izdavanje" | "Na prodaju";
-};
+import { type Inputs } from "../types";
 
 export default function DodajStan() {
   const {
@@ -40,21 +34,9 @@ export default function DodajStan() {
   const formatSuggestion = (item: any) => {
     const addr = item.address || {};
     const house = addr.house_number ? ` ${addr.house_number}` : "";
-    const street =
-      addr.road ||
-      addr.pedestrian ||
-      addr.footway ||
-      addr.path ||
-      addr.residential ||
-      addr.street ||
-      "";
+    const street = addr.road || addr.residential || addr.street || "";
     const city =
-      addr.city ||
-      addr.town ||
-      addr.village ||
-      addr.county ||
-      addr.state ||
-      "";
+      addr.city || addr.town || addr.village || addr.county || addr.state || "";
     const left = street ? `${street}${house}` : "";
     if (left && city) return `${left}, ${city}`;
     if (left) return left;
@@ -185,27 +167,9 @@ export default function DodajStan() {
             autoComplete="off"
           />
           {suggestions.length > 0 && (
-            <ul
-              style={{
-                position: "absolute",
-                zIndex: 50,
-                left: 0,
-                right: 0,
-                background: "#fff",
-                listStyle: "none",
-                margin: 0,
-                padding: 0,
-                boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
-                maxHeight: 220,
-                overflowY: "auto",
-              }}
-            >
+            <ul>
               {suggestions.map((s) => (
-                <li
-                  key={s.place_id}
-                  onClick={() => handleSuggestionClick(s)}
-                  style={{ padding: "8px 10px", cursor: "pointer" }}
-                >
+                <li key={s.place_id} onClick={() => handleSuggestionClick(s)}>
                   {formatSuggestion(s)}
                 </li>
               ))}

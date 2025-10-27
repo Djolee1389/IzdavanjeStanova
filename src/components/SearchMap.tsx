@@ -1,38 +1,51 @@
 import "../styles/SearchMap.css";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import cityCoords from "../CityCoords.json";
+import type { CityKey, SearchMapProps, SearchInputs } from "../types";
 
-type Inputs = {
-  location: string;
-  purpose: "Izdavanje" | "Na prodaju";
-  minPrice: number;
-  maxPrice: number;
-};
-
-type CityKey = keyof typeof cityCoords;
-
-interface SearchMapProps {
-  onCityChange: (city: CityKey) => void;
-}
-
-export default function SearchMap({ onCityChange }: SearchMapProps) {
+export default function SearchMap({
+  onCityChange,
+  onPurposeChange,
+  onPriceChange,
+}: SearchMapProps) {
   const {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
-  } = useForm<Inputs>();
+  } = useForm<SearchInputs>();
 
   const minPrice = watch("minPrice");
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<SearchInputs> = (data) => {
+    handleCityChange({
+      target: { value: data.location },
+    } as React.ChangeEvent<HTMLSelectElement>);
+    handlePurposeChange({
+      target: { value: data.purpose },
+    } as React.ChangeEvent<HTMLSelectElement>);
+    handlePriceChange(data.minPrice, data.maxPrice);
+    reset();
+
+    // console.log(data);
   };
 
   const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedCity = e.target.value as CityKey;
     if (selectedCity) {
       onCityChange(selectedCity);
+    }
+  };
+
+  const handlePurposeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedPurpose = e.target.value as "" | "Izdavanje" | "Na prodaju";
+    onPurposeChange(selectedPurpose);
+  };
+
+  const handlePriceChange = (minPrice: number, maxPrice: number) => {
+    if (onPriceChange) {
+      onPriceChange(minPrice, maxPrice);
     }
   };
 
@@ -45,16 +58,18 @@ export default function SearchMap({ onCityChange }: SearchMapProps) {
       >
         <h3>Pretraga</h3>
         <div className="selects">
-          <select {...register("location")} onChange={handleCityChange}>
+          <select {...register("location")}>
             <option value="">Izaberi lokaciju</option>
-            {Object.keys(cityCoords).sort().map((city) => (
-              <option key={city} value={city}>
-                {city.charAt(0).toUpperCase() + city.slice(1)}
-              </option>
-            ))}
+            {Object.keys(cityCoords)
+              .sort()
+              .map((city) => (
+                <option key={city} value={city}>
+                  {city.charAt(0).toUpperCase() + city.slice(1)}
+                </option>
+              ))}
           </select>
           <select {...register("purpose")}>
-            <option value="">Izaberi svrhu</option>
+            <option value="">Sve</option>
             <option value="Izdavanje">Izdavanje</option>
             <option value="Na prodaju">Na prodaju</option>
           </select>
@@ -69,7 +84,7 @@ export default function SearchMap({ onCityChange }: SearchMapProps) {
             {...register("minPrice", {
               valueAsNumber: true,
               min: { value: 0, message: "Cijena ne može biti negativna" },
-              max: { value: 10000, message: "Prevelika cijena" },
+              // max: { value: 10000, message: "Prevelika cijena" },
             })}
           />
           {errors.minPrice && <span>{errors.minPrice.message}</span>}

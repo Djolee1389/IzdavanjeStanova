@@ -1,4 +1,3 @@
-// src/pages/StanoviMapa.tsx
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
@@ -6,28 +5,10 @@ import { FaTrash } from "react-icons/fa";
 import { db } from "../Firebase";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import type { LatLngTuple } from "leaflet"; 
+import type { LatLngTuple } from "leaflet";
 import SearchMap from "../components/SearchMap";
 import cityCoords from "../CityCoords.json";
-
-type Stan = {
-  id: string;
-  address: string;
-  squareMeters: number;
-  purpose: string;
-  price: number;
-  lat: number;
-  lng: number;
-  priceMessage: string;
-};
-
-type CityKey = keyof typeof cityCoords;
-
-interface CityCoordinates {
-  lat: number;
-  lng: number;
-  maxBounds: [LatLngTuple, LatLngTuple];
-}
+import type { CityKey, Stan, CityCoordinates } from "../types";
 
 function MapController({ city }: { city: CityKey }) {
   const map = useMap();
@@ -46,6 +27,11 @@ function MapController({ city }: { city: CityKey }) {
 export default function StanoviMapa() {
   const [stanovi, setStanovi] = useState<Stan[]>([]);
   const [selectedCity, setSelectedCity] = useState<CityKey>("banjaluka");
+  const [selectedPurpose, setSelectedPurpose] = useState<
+    "" | "Izdavanje" | "Na prodaju"
+  >("");
+  const [minPrice, setMinPrice] = useState<number | undefined>(undefined);
+  const [maxPrice, setMaxPrice] = useState<number | undefined>(undefined);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,6 +59,25 @@ export default function StanoviMapa() {
   const handleCityChange = (city: CityKey) => {
     setSelectedCity(city);
   };
+
+  const handlePurposeChange = (purpose: "" | "Izdavanje" | "Na prodaju") => {
+    setSelectedPurpose(purpose);
+  };
+  const handlePriceChange = (min: number, max: number) => {
+    setMinPrice(min);
+    setMaxPrice(max);
+  };
+
+  const filteredStanovi = stanovi
+    .filter(
+      (stan) => typeof stan.lat === "number" && typeof stan.lng === "number"
+    )
+    .filter((stan) => !selectedPurpose || stan.purpose === selectedPurpose)
+    .filter((stan) => {
+      if (minPrice !== undefined && stan.price < minPrice) return false;
+      if (maxPrice !== undefined && stan.price > maxPrice) return false;
+      return true;
+    });
 
   const markerIcon = new L.Icon({
     iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
@@ -104,52 +109,51 @@ export default function StanoviMapa() {
           attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {stanovi
-          .filter(
-            (stan) =>
-              typeof stan.lat === "number" && typeof stan.lng === "number"
-          )
-          .map((stan) => (
-            <Marker
-              key={stan.id}
-              position={[stan.lat, stan.lng]}
-              icon={markerIcon}
-            >
-              <Popup>
-                <div className="popup">
-                  <h3>{stan.address}</h3> <br />
-                  <b>Povrsina</b>: {stan.squareMeters} m²
-                  <br />
-                  <b>Svrha</b>: {stan.purpose}
-                  <br />
-                  <b>{stan.priceMessage}</b>: {stan.price} KM
-                  <button
-                    title="Obrisi"
-                    onClick={() => handleDelete(stan.id)}
-                    style={{
-                      height: "30px",
-                      aspectRatio: "1",
-                      border: "none",
-                      color: "red",
-                      backgroundColor: "transparent",
-                      borderRadius: "5px",
-                      cursor: "pointer",
-                      marginTop: "10px",
-                      position: "absolute",
-                      bottom: "5px",
-                      right: "15px",
-                      fontSize: "18px",
-                    }}
-                  >
-                    <FaTrash />
-                  </button>
-                </div>
-              </Popup>
-            </Marker>
-          ))}
+        {filteredStanovi.map((stan) => (
+          <Marker
+            key={stan.id}
+            position={[stan.lat, stan.lng]}
+            icon={markerIcon}
+          >
+            <Popup>
+              <div className="popup">
+                <h3>{stan.address}</h3> <br />
+                <b>Povrsina</b>: {stan.squareMeters} m²
+                <br />
+                <b>Svrha</b>: {stan.purpose}
+                <br />
+                <b>{stan.priceMessage}</b>: {stan.price} KM
+                <button
+                  title="Obrisi"
+                  onClick={() => handleDelete(stan.id)}
+                  style={{
+                    height: "30px",
+                    aspectRatio: "1",
+                    border: "none",
+                    color: "red",
+                    backgroundColor: "transparent",
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                    marginTop: "10px",
+                    position: "absolute",
+                    bottom: "5px",
+                    right: "15px",
+                    fontSize: "18px",
+                  }}
+                >
+                  <FaTrash />
+                </button>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
       </MapContainer>
 
-      <SearchMap onCityChange={handleCityChange} />
+      <SearchMap
+        onCityChange={handleCityChange}
+        onPurposeChange={handlePurposeChange}
+        onPriceChange={handlePriceChange}
+      />
     </div>
   );
 }
