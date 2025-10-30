@@ -9,6 +9,7 @@ import type { LatLngTuple } from "leaflet";
 import SearchMap from "../components/SearchMap";
 import cityCoords from "../CityCoords.json";
 import type { CityKey, Stan, CityCoordinates } from "../types";
+import { useIntl } from "react-intl";
 
 function MapController({ city }: { city: CityKey }) {
   const map = useMap();
@@ -25,6 +26,8 @@ function MapController({ city }: { city: CityKey }) {
 }
 
 export default function StanoviMapa() {
+  const intl = useIntl();
+
   const [stanovi, setStanovi] = useState<Stan[]>([]);
   const [selectedCity, setSelectedCity] = useState<CityKey>("banjaluka");
   const [selectedPurpose, setSelectedPurpose] = useState<
@@ -36,14 +39,28 @@ export default function StanoviMapa() {
   useEffect(() => {
     const fetchData = async () => {
       const querySnapshot = await getDocs(collection(db, "stanovi"));
-      const data = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      })) as Stan[];
+      const data = querySnapshot.docs.map((doc) => {
+        const stan = doc.data();
+
+        const priceLabel = stan.purpose === "Izdavanje" 
+          ? intl.formatMessage({ id: "priceMessage.rent", defaultMessage: "Mjesecna cijena" })
+          : intl.formatMessage({ id: "priceMessage.sale", defaultMessage: "Prodajna cijena" });
+
+        const purposeLabel = stan.purpose === "Izdavanje"
+          ? intl.formatMessage({ id: "popup.purposeRent", defaultMessage: "Izdavanje" })
+          : intl.formatMessage({ id: "popup.purposeSale", defaultMessage: "Na prodaju" });
+
+        return {
+          id: doc.id,
+          ...stan,
+          priceMessage: priceLabel,
+          purpose: purposeLabel,
+        } as Stan;
+      });
       setStanovi(data);
     };
     fetchData();
-  }, []);
+  }, [intl]);
 
   const handleDelete = async (id: string) => {
     // if (!confirm("Da li ste sigurni da želite obrisati ovaj stan?")) return;
@@ -118,13 +135,28 @@ export default function StanoviMapa() {
             <Popup>
               <div className="popup">
                 <h3>{stan.address}</h3> <br />
-                <b>Povrsina</b>: {stan.squareMeters} m²
+                <b>
+                  {intl.formatMessage({
+                    id: "label.squareMeters",
+                    defaultMessage: "Površina",
+                  })}:
+                </b>
+                  &nbsp;{stan.squareMeters} m²
                 <br />
-                <b>Svrha</b>: {stan.purpose}
+                <b>
+                  {intl.formatMessage({
+                    id: "label.purpose",
+                    defaultMessage: "Svrha",
+                  })}:
+                </b>
+                &nbsp;{stan.purpose}
                 <br />
-                <b>{stan.priceMessage}</b>: {stan.price} KM
+                <b>{stan.priceMessage}:</b> {stan.price} KM
                 <button
-                  title="Obrisi"
+                  title={intl.formatMessage({
+                    id: "button.delete",
+                    defaultMessage: "Obriši",
+                  })}
                   onClick={() => handleDelete(stan.id)}
                   style={{
                     height: "30px",

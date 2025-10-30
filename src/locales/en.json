@@ -1,0 +1,37 @@
+{
+    "nav.add": "Add",
+    "nav.map": "Map",
+    "path.map": "/appartments-map",
+    "path.add": "/add-appartment",
+
+    "search.label" : "Search",
+    "choose.location": "Choose location",
+    "choose.purpose": "All",
+    "purpose.rent": "Rent",
+    "purpose.sale": "For Sale",
+    "price.search": "Search by price",
+    "button.submit": "Submit",
+    "button.search": "Search",
+    "add.formTitle": "Information",
+    "label.address": "Address",
+    "label.purpose": "Purpose",
+    "label.squareMeters": "Square Meters",
+    "label.price": "Price",
+    "select.purposePlaceholder": "Select purpose",
+    "priceMessage.rent": "Monthly rent",
+    "priceMessage.sale": "Sale price",
+    "loader.loading": "Loading...",
+
+    "button.delete": "Delete",
+    "popup.surface": "Surface",
+    "popup.purposeRent": "Rent",
+    "popup.purposeSale": "For Sale",
+
+    "error.addressRequired": "Address is required",
+    "error.purposeRequired": "Purpose is required",
+    "error.squareMetersRequired": "Square meters is required",
+    "error.squareMetersPositive": "Square meters must be a positive number",
+    "error.priceRequired": "Price is required",
+    "error.pricePositive": "Price must be a positive number"
+
+}

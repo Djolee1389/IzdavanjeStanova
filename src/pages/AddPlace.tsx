@@ -4,6 +4,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { useState, useEffect, useRef } from "react";
 import { LoadingSpinner } from "../components/LoadingSpinner";
 import { type Inputs } from "../types";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export default function DodajStan() {
   const {
@@ -12,13 +13,21 @@ export default function DodajStan() {
     formState: { errors },
     reset,
     watch,
-    setValue, // added
+    setValue,
   } = useForm<Inputs>();
 
   const purpose = watch("purpose");
-
+  const intl = useIntl();
   const priceLabel =
-    purpose === "Izdavanje" ? "Mjesecna cijena" : "Prodajna cijena";
+    purpose === "Izdavanje"
+      ? intl.formatMessage({
+          id: "priceMessage.rent",
+          defaultMessage: "Mjesecna cijena",
+        })
+      : intl.formatMessage({
+          id: "priceMessage.sale",
+          defaultMessage: "Prodajna cijena",
+        });
 
   const [loading, setLoading] = useState(false);
 
@@ -147,16 +156,35 @@ export default function DodajStan() {
     }
   };
 
+
+  const t = (id: string, defaultMessage: string) =>
+    intl.formatMessage({ id, defaultMessage });
+  const M = {
+    adrRequired: t("error.addressRequired", "Adresa je obavezna"),
+    sqmRequired: t("error.squareMetersRequired", "Kvadratura je obavezna"),
+    sqmPositive: t("error.squareMetersPositive", "Kvadratura mora biti pozitivan broj"),
+    purposeRequired: t("error.purposeRequired", "Svrha je obavezna"),
+    priceRequired: t("error.priceRequired", "Cijena je obavezna"),
+    pricePositive: t("error.pricePositive", "Cijena mora biti pozitivan broj"),
+  }
+
   return (
     <div className="container">
-      <form onSubmit={handleSubmit(onSubmit)} id="form1" autoComplete="off">
-        <p className="form-title">PODACI</p>
-        <label htmlFor="f-address">Adresa</label>
+      <form onSubmit={handleSubmit(onSubmit)} id="form-add" autoComplete="off">
+        <p className="form-title">
+          <FormattedMessage id="add.formTitle" defaultMessage="Podaci" />
+        </p>
+        <label htmlFor="f-address">
+          <FormattedMessage id="label.address" defaultMessage="Adresa" />
+        </label>
         <div style={{ position: "relative", width: "100%" }}>
           <input
             id="f-address"
-            placeholder="Adresa"
-            {...register("address", { required: "Adresa je obavezna" })}
+            placeholder={intl.formatMessage({
+              id: "label.address",
+              defaultMessage: "Unesite adresu",
+            })}
+            {...register("address", { required: M.adrRequired })}
             value={query || ""}
             onChange={(e) => {
               const v = e.target.value;
@@ -178,28 +206,44 @@ export default function DodajStan() {
         </div>
         {errors.address && <span>{errors.address.message}</span>}
 
-        <label htmlFor="f-squareMeters">Kvadratura</label>
+        <label htmlFor="f-squareMeters">
+          <FormattedMessage
+            id="label.squareMeters"
+            defaultMessage="Kvadratura (m²)"
+          />
+        </label>
         <input
           id="f-squareMeters"
           placeholder="m²"
           type="number"
           step="any"
           {...register("squareMeters", {
-            required: "Kvadratura je obavezna",
+            required: M.sqmRequired,
             valueAsNumber: true,
-            min: { value: 1, message: "Kvadratura mora biti pozitivna" },
+            min: { value: 1, message: M.sqmPositive },
           })}
         />
         {errors.squareMeters && <span>{errors.squareMeters.message}</span>}
 
-        <label htmlFor="f-purpose">Svrha</label>
+        <label htmlFor="f-purpose">
+          <FormattedMessage id="label.purpose" defaultMessage="Svrha" />
+        </label>
         <select
           id="f-purpose"
-          {...register("purpose", { required: "Svrha je obavezna" })}
+          {...register("purpose", { required: M.purposeRequired })}
         >
-          <option value="">Odaberite svrhu</option>
-          <option value="Izdavanje">Izdavanje</option>
-          <option value="Na prodaju">Prodaja</option>
+          <option value="">
+            <FormattedMessage
+              id="select.purposePlaceholder"
+              defaultMessage="Odaberite svrhu"
+            />
+          </option>
+          <option value="Izdavanje">
+            <FormattedMessage id="purpose.rent" defaultMessage="Izdavanje" />
+          </option>
+          <option value="Na prodaju">
+            <FormattedMessage id="purpose.sale" defaultMessage="Na prodaju" />
+          </option>
         </select>
         {errors.purpose && <span>{errors.purpose.message}</span>}
 
@@ -210,9 +254,9 @@ export default function DodajStan() {
           type="number"
           step="any"
           {...register("price", {
-            required: "Cijena je obavezna",
+            required: M.priceRequired,
             valueAsNumber: true,
-            min: { value: 1, message: "Cijena mora biti pozitivna" },
+            min: { value: 1, message: M.pricePositive },
           })}
         />
         {errors.price && <span>{errors.price.message}</span>}
@@ -220,10 +264,22 @@ export default function DodajStan() {
         {loading ? (
           <div className="loading-container">
             <LoadingSpinner />
-            <p>Dodavanje u toku...</p>
+            <p>
+              <FormattedMessage
+                id="loader.loading"
+                defaultMessage="Dodavanje u toku..."
+              />
+            </p>
           </div>
         ) : (
-          <input type="submit" value="Dodaj" disabled={loading} />
+          <input
+            type="submit"
+            value={intl.formatMessage({
+              id: "button.submit",
+              defaultMessage: "Dodavanje u toku...",
+            })}
+            disabled={loading}
+          />
         )}
       </form>
     </div>

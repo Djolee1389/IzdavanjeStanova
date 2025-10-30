@@ -7,6 +7,7 @@ nav {
   justify-content: center;
   align-items: center;
   background-color: white;
+  position: relative;
 }
 nav a {
   color: black;
@@ -36,4 +37,9 @@ nav a:hover {
 
 nav a:hover::after {
   transform: scaleX(1);
+}
+
+.language-container{
+  position: absolute;
+  right: 20px;
 }

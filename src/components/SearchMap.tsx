@@ -2,6 +2,7 @@ import "../styles/SearchMap.css";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import cityCoords from "../CityCoords.json";
 import type { CityKey, SearchMapProps, SearchInputs } from "../types";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export default function SearchMap({
   onCityChange,
@@ -12,7 +13,6 @@ export default function SearchMap({
     register,
     handleSubmit,
     watch,
-    reset,
     formState: { errors },
   } = useForm<SearchInputs>();
 
@@ -26,7 +26,6 @@ export default function SearchMap({
       target: { value: data.purpose },
     } as React.ChangeEvent<HTMLSelectElement>);
     handlePriceChange(data.minPrice, data.maxPrice);
-    reset();
 
     // console.log(data);
   };
@@ -49,6 +48,8 @@ export default function SearchMap({
     }
   };
 
+  const intl = useIntl();
+
   return (
     <div className="search-map">
       <form
@@ -56,10 +57,17 @@ export default function SearchMap({
         onSubmit={handleSubmit(onSubmit)}
         autoComplete="off"
       >
-        <h3>Pretraga</h3>
+        <h3>
+          <FormattedMessage id="search.label" defaultMessage="Pretraga" />
+        </h3>
         <div className="selects">
           <select {...register("location")}>
-            <option value="">Izaberi lokaciju</option>
+            <option value="">
+              <FormattedMessage
+                id="choose.location"
+                defaultMessage="Izaberi lokaciju"
+              />
+            </option>
             {Object.keys(cityCoords)
               .sort()
               .map((city) => (
@@ -69,12 +77,23 @@ export default function SearchMap({
               ))}
           </select>
           <select {...register("purpose")}>
-            <option value="">Sve</option>
-            <option value="Izdavanje">Izdavanje</option>
-            <option value="Na prodaju">Na prodaju</option>
+            <option value="">
+              <FormattedMessage id="choose.purpose" defaultMessage="Sve" />
+            </option>
+            <option value="Izdavanje">
+              <FormattedMessage id="purpose.rent" defaultMessage="Izdavanje" />
+            </option>
+            <option value="Na prodaju">
+              <FormattedMessage id="purpose.sale" defaultMessage="Na prodaju" />
+            </option>
           </select>
         </div>
-        <label htmlFor="priceRange">Pretrazi po cijeni</label>
+        <label htmlFor="priceRange">
+          <FormattedMessage
+            id="price.search"
+            defaultMessage="Pretraži po cijeni"
+          />
+        </label>
         <div className="price-range">
           <h5>Min</h5>
           <input
@@ -103,7 +122,13 @@ export default function SearchMap({
           />
           {errors.maxPrice && <span>{errors.maxPrice.message}</span>}
         </div>
-        <input type="submit" value="Pretrazi" />
+        <input
+          type="submit"
+          value={intl.formatMessage({
+            id: "button.search",
+            defaultMessage: "Pretraži",
+          })}
+        />
       </form>
     </div>
   );
