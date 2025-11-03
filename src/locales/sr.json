@@ -1,6 +1,7 @@
 {
     "nav.add": "Dodaj",
     "nav.map": "Mapa",
+    "nav.profile": "Profil",
     "path.map": "/stanovi-mapa",
     "path.add": "/dodaj-stan",
     "search.label" : "Pretraga",
@@ -24,6 +25,14 @@
     "popup.surface": "Površina",
     "popup.purposeRent": "Izdavanje",
     "popup.purposeSale": "Na prodaju",
+
+    "login.password" : "Lozinka",
+    "login.password.repeat" : "Ponovi lozinku",
+    "login.signupLink" : "Nemate nalog? Registrujte se",
+    "auth.login": "Prijavite se",
+    "auth.logout": "Odjavite se",
+    "auth.signup": "Registrujte se",
+    "auth.loading": "Učitavanje...",
 
     "error.addressRequired": "Adresa je obavezna",
     "error.purposeRequired": "Svrha je obavezna",

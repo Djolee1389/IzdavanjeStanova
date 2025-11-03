@@ -1,6 +1,7 @@
 {
     "nav.add": "Add",
     "nav.map": "Map",
+    "nav.profile": "Profile",
     "path.map": "/appartments-map",
     "path.add": "/add-appartment",
 
@@ -26,6 +27,14 @@
     "popup.surface": "Surface",
     "popup.purposeRent": "Rent",
     "popup.purposeSale": "For Sale",
+
+    "login.password" : "Password",
+    "login.password.repeat" : "Repeat Password",
+    "login.signupLink" : "Don't have an account? Sign Up",
+    "auth.login": "Log In",
+    "auth.logout": "Log Out",
+    "auth.signup": "Sign Up",
+    "auth.loading": "Loading...",
 
     "error.addressRequired": "Address is required",
     "error.purposeRequired": "Purpose is required",

@@ -101,6 +101,10 @@ export default function DodajStan() {
     });
   };
 
+  // Add Serbian price message that will be stored in DB
+  const dbPriceMessage =
+    purpose === "Izdavanje" ? "Mjesečna cijena" : "Prodajna cijena";
+
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
       setLoading(true);
@@ -141,7 +145,7 @@ export default function DodajStan() {
         lat: lat,
         lng: lon,
         publishDate: new Date().toISOString(),
-        priceMessage: priceLabel,
+        priceMessage: dbPriceMessage, // Always store Serbian version
       });
 
       reset();
@@ -156,17 +160,19 @@ export default function DodajStan() {
     }
   };
 
-
   const t = (id: string, defaultMessage: string) =>
     intl.formatMessage({ id, defaultMessage });
   const M = {
     adrRequired: t("error.addressRequired", "Adresa je obavezna"),
     sqmRequired: t("error.squareMetersRequired", "Kvadratura je obavezna"),
-    sqmPositive: t("error.squareMetersPositive", "Kvadratura mora biti pozitivan broj"),
+    sqmPositive: t(
+      "error.squareMetersPositive",
+      "Kvadratura mora biti pozitivan broj"
+    ),
     purposeRequired: t("error.purposeRequired", "Svrha je obavezna"),
     priceRequired: t("error.priceRequired", "Cijena je obavezna"),
     pricePositive: t("error.pricePositive", "Cijena mora biti pozitivan broj"),
-  }
+  };
 
   return (
     <div className="container">
