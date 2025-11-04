@@ -1,0 +1,52 @@
+.profile-container {
+  background-color: white;
+  flex-direction: column;
+  width: 50vw;
+  height: fit-content;
+  padding: 10px 15px;
+  border-radius: 5px;
+  box-shadow: var(--form-shadow);
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.profile-container ul {
+  list-style: none;
+  font-size: 14px;
+}
+
+.user-appartment {
+  background-color: wheat;
+  width: 100%;
+  padding: 10px 15px;
+  border-radius: 5px;
+  position: relative;
+  margin: 10px 0;
+}
+
+.profile-container ul li {
+  transition: var(--transition);
+  width: 50%;
+}
+.profile-container ul li:hover {
+  transform: scale(1.02);
+}
+
+.logout-button {
+  border: none;
+  outline: none;
+  background-color: var(--submit);
+  border-radius: 5px;
+  padding: 5px;
+  transition: var(--transition);
+  &:hover {
+    transform: scale(1.05);
+    cursor: pointer;
+  }
+}
+h4 {
+  font-size: 18px;
+}

@@ -6,7 +6,18 @@ import { LoadingSpinner } from "../components/LoadingSpinner";
 import { type Inputs } from "../types";
 import { FormattedMessage, useIntl } from "react-intl";
 
+import { auth } from "../Firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import type { User } from "firebase/auth";
+
 export default function DodajStan() {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (u) => setUser(u));
+    return unsubscribe;
+  }, []);
+
   const {
     register,
     handleSubmit,
@@ -145,7 +156,8 @@ export default function DodajStan() {
         lat: lat,
         lng: lon,
         publishDate: new Date().toISOString(),
-        priceMessage: dbPriceMessage, // Always store Serbian version
+        priceMessage: dbPriceMessage, 
+        userEmail: user?.email
       });
 
       reset();
@@ -175,7 +187,7 @@ export default function DodajStan() {
   };
 
   return (
-    <div className="container">
+    <div className="container add-place-container">
       <form onSubmit={handleSubmit(onSubmit)} id="form-add" autoComplete="off">
         <p className="form-title">
           <FormattedMessage id="add.formTitle" defaultMessage="Podaci" />

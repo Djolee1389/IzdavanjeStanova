@@ -7,6 +7,7 @@ import App from "./App.tsx";
 import messagesEn from "./locales/en.json";
 import messagesSr from "./locales/sr.json";
 
+
 const messages = {
   en: messagesEn,
   sr: messagesSr,

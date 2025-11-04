@@ -60,3 +60,13 @@ nav {
   width: fit-content;
   padding: 6px;
 }
+
+.nav-section-right a{
+  color: rgba(0, 0, 0, .5);
+  transform: translateY(10%);
+  transition: var(--transition);
+  &:hover{
+    transform: scale(1.05);
+    color: black;
+  }
+}

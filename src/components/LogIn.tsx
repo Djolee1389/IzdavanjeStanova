@@ -4,7 +4,7 @@ import { useNavigate } from "react-router";
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import type { User } from "firebase/auth";
 import { Link } from "react-router";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 const SignUp: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -14,7 +14,7 @@ const SignUp: React.FC = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-
+  const intl = useIntl();
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -44,14 +44,12 @@ const SignUp: React.FC = () => {
     }
   };
 
-  const valid = email.trim().length > 0 && password.length >= 6;
+  // const valid = email.trim().length > 0 && password.length >= 6;
 
   return (
-    <div className="sign-up-container">
+    <div className="container sign-up-container">
       {user ? (
-        <>
-          {navigate("/profil", { replace: true })}
-        </>
+        <>{navigate("/profil", { replace: true })}</>
       ) : (
         <form
           onSubmit={(e) => {
@@ -60,6 +58,12 @@ const SignUp: React.FC = () => {
           aria-label="auth-form"
           id="form-auth"
         >
+          <h3>
+            <FormattedMessage
+              id="auth.login.header"
+              defaultMessage="Prijava"
+            ></FormattedMessage>
+          </h3>
           <label htmlFor="f-email">Email</label>
           <input
             type="email"
@@ -68,11 +72,19 @@ const SignUp: React.FC = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <label htmlFor="f-password">Password</label>
+          <label htmlFor="f-password">
+            <FormattedMessage
+              id="login.password"
+              defaultMessage="Lozinka"
+            ></FormattedMessage>
+          </label>
           <input
             type="password"
             id="f-password"
-            placeholder="Password"
+            placeholder={intl.formatMessage({
+              id: "login.password",
+              defaultMessage: "Lozinka",
+            })}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
@@ -80,7 +92,7 @@ const SignUp: React.FC = () => {
             <button
               type="button"
               onClick={handleLogin}
-              disabled={!valid || loading}
+              disabled={loading}
               style={{ marginLeft: 8 }}
             >
               {loading ? (
@@ -99,7 +111,7 @@ const SignUp: React.FC = () => {
               />
             </Link>
           </div>
-          {error && <p style={{ color: "red" }}>{error}</p>}
+          {error && <span style={{ color: "red" }}>{error}</span>}
         </form>
       )}
     </div>

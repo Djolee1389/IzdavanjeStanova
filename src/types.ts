@@ -32,6 +32,7 @@ export type Stan = {
   lat: number;
   lng: number;
   priceMessage: string;
+  userEmail: string;
 };
 
 import type { LatLngTuple } from "leaflet";

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
+import { useNavigate } from "react-router-dom";
+
 import { auth } from "../Firebase";
 import {
   createUserWithEmailAndPassword,
-  signOut,
   onAuthStateChanged,
+  updateProfile,
 } from "firebase/auth";
 import type { User } from "firebase/auth";
 
@@ -12,11 +14,13 @@ const SignUp: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [username, setUsername] = useState("");
+  const [displayName, setDisplayName] = useState("");
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const navigate = useNavigate();
+  const intl = useIntl();
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -42,25 +46,22 @@ const SignUp: React.FC = () => {
     setError(null);
     setLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, email.trim(), password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email.trim(),
+        password
+      );
+      await updateProfile(userCredential.user, {
+        displayName: displayName.trim(),
+      });
       setEmail("");
       setPassword("");
       setConfirmPassword("");
-      setUsername("");
+      setDisplayName("");
     } catch (err: unknown) {
       setError(formatError(err));
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleLogout = async () => {
-    confirm("Are you sure you want to log out?");
-    setError(null);
-    try {
-      await signOut(auth);
-    } catch (err: unknown) {
-      setError(formatError(err));
     }
   };
 
@@ -70,16 +71,9 @@ const SignUp: React.FC = () => {
   //     password === confirmPassword;
 
   return (
-    
-    <div className="sign-up-container">
+    <div className="container sign-up-container">
       {user ? (
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <p>Welcome, {username}</p>
-          <button onClick={handleLogout} disabled={loading}>
-            Logout
-          </button>
-        </div>
-
+        <>{navigate("/profil", { replace: true })}</>
       ) : (
         <form
           onSubmit={(e) => {
@@ -88,6 +82,12 @@ const SignUp: React.FC = () => {
           aria-label="auth-form"
           id="form-auth"
         >
+          <h3>
+            <FormattedMessage
+              id="auth.signup.header"
+              defaultMessage="Registracija"
+            ></FormattedMessage>
+          </h3>
           <label htmlFor="f-email">Email</label>
           <input
             type="email"
@@ -96,13 +96,21 @@ const SignUp: React.FC = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <label htmlFor="f-username">Username</label>
+          <label htmlFor="f-username">
+            <FormattedMessage
+              id="login.username"
+              defaultMessage="Korisnicko ime"
+            ></FormattedMessage>
+          </label>
           <input
             type="text"
             id="f-username"
-            placeholder="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            placeholder={intl.formatMessage({
+              id: "login.username",
+              defaultMessage: "Korisnicko ime",
+            })}
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
           />
 
           <label htmlFor="f-password">
@@ -111,7 +119,7 @@ const SignUp: React.FC = () => {
           <input
             type="password"
             id="f-password"
-            placeholder={useIntl().formatMessage({
+            placeholder={intl.formatMessage({
               id: "login.password",
               defaultMessage: "Lozinka",
             })}
@@ -127,7 +135,7 @@ const SignUp: React.FC = () => {
           <input
             type="password"
             id="f-rpassword"
-            placeholder={useIntl().formatMessage({
+            placeholder={intl.formatMessage({
               id: "login.password.repeat",
               defaultMessage: "Ponovi lozinku",
             })}

@@ -14,12 +14,12 @@ import type { User } from "firebase/auth";
 import { FaUser} from "react-icons/fa6";
 
 function App({ setLocale }: { setLocale: (lang: "sr" | "en") => void }) {
-  const [user, setUser] = useState<User | null>(null);
+    const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (u) => setUser(u));
-    return unsubscribe;
-  }, []);
+    useEffect(() => {
+      const unsubscribe = onAuthStateChanged(auth, (u) => setUser(u));
+      return unsubscribe;
+    }, []);
 
   return (
     <>
@@ -42,7 +42,7 @@ function App({ setLocale }: { setLocale: (lang: "sr" | "en") => void }) {
             </Link>
           ) : (
             <Link to={"/prijava"}>
-              <FormattedMessage id="nav.login" defaultMessage="Prijava" />
+              <FormattedMessage id="auth.login.header" defaultMessage="Prijava" />
             </Link>
           )}
 

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
-import { FaTrash } from "react-icons/fa";
+import { collection, getDocs} from "firebase/firestore";
 import { db } from "../Firebase";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -61,17 +60,6 @@ export default function StanoviMapa() {
     };
     fetchData();
   }, [intl]);
-
-  const handleDelete = async (id: string) => {
-    // if (!confirm("Da li ste sigurni da želite obrisati ovaj stan?")) return;
-    try {
-      await deleteDoc(doc(db, "stanovi", id));
-      setStanovi((prevStanovi) => prevStanovi.filter((stan) => stan.id !== id));
-    } catch (e) {
-      console.error("Greška pri brisanju:", e);
-      alert("Greška pri brisanju stana.");
-    }
-  };
 
   const handleCityChange = (city: CityKey) => {
     setSelectedCity(city);
@@ -152,29 +140,7 @@ export default function StanoviMapa() {
                 &nbsp;{stan.purpose}
                 <br />
                 <b>{stan.priceMessage}:</b> {stan.price} KM
-                <button
-                  title={intl.formatMessage({
-                    id: "button.delete",
-                    defaultMessage: "Obriši",
-                  })}
-                  onClick={() => handleDelete(stan.id)}
-                  style={{
-                    height: "30px",
-                    aspectRatio: "1",
-                    border: "none",
-                    color: "red",
-                    backgroundColor: "transparent",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                    marginTop: "10px",
-                    position: "absolute",
-                    bottom: "5px",
-                    right: "15px",
-                    fontSize: "18px",
-                  }}
-                >
-                  <FaTrash />
-                </button>
+                
               </div>
             </Popup>
           </Marker>
