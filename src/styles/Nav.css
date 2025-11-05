@@ -52,6 +52,7 @@ nav {
   right: 20px;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 25px;
   z-index: 2;
 }
@@ -63,7 +64,7 @@ nav {
 
 .nav-section-right a{
   color: rgba(0, 0, 0, .5);
-  transform: translateY(10%);
+  /* transform: translateY(10%); */
   transition: var(--transition);
   &:hover{
     transform: scale(1.05);

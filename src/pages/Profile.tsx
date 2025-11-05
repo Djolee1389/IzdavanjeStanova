@@ -85,7 +85,7 @@ function Profile() {
   };
 
   const handleDelete = async (id: string) => {
-    // if (!confirm("Da li ste sigurni da želite obrisati ovaj stan?")) return;
+    if (!confirm("Da li ste sigurni da želite obrisati ovaj stan?")) return;
     try {
       await deleteDoc(doc(db, "stanovi", id));
       setStanovi((prevStanovi) => prevStanovi.filter((stan) => stan.id !== id));
@@ -105,12 +105,13 @@ function Profile() {
             {intl.formatMessage({
               id: "auth.logout",
               defaultMessage: "Odjavite se",
-            })} &nbsp;
+            })}{" "}
+            &nbsp;
             <IoExitOutline />
           </button>
           {error && <span className="error-message">{error}</span>}
         </div>
-
+        <hr />
         <section style={{ marginTop: 20, width: "100%" }}>
           <h2>
             {intl.formatMessage({
@@ -120,7 +121,12 @@ function Profile() {
             &nbsp; ({userFiltered.length})
           </h2>
           {userFiltered.length === 0 ? (
-            <p>No apartments found for this account.</p>
+            <p style={{marginTop:"10px"}}>
+              {intl.formatMessage({
+                id: "profile.active.appartments",
+                defaultMessage: "Nemate aktivnih oglasa",
+              })}
+            </p>
           ) : (
             <ul>
               {userFiltered.map((s: any) => (

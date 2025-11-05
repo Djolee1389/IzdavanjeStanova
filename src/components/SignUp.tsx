@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useNavigate } from "react-router-dom";
+import { formatFirebaseError } from "../utils/formatFirebaseError";
 
 import { auth } from "../Firebase";
 import {
@@ -28,15 +29,15 @@ const SignUp: React.FC = () => {
     return unsubscribe;
   }, []);
 
-  const formatError = (err: unknown) => {
-    if (!err) return "Unknown error";
-    if (err instanceof Error) return err.message;
-    try {
-      return String(err);
-    } catch {
-      return "Unknown error";
-    }
-  };
+  // const formatError = (err: unknown) => {
+  //   if (!err) return "Unknown error";
+  //   if (err instanceof Error) return err.message;
+  //   try {
+  //     return String(err);
+  //   } catch {
+  //     return "Unknown error";
+  //   }
+  // };
 
   const handleSignup = async () => {
     if (password !== confirmPassword) {
@@ -59,7 +60,7 @@ const SignUp: React.FC = () => {
       setConfirmPassword("");
       setDisplayName("");
     } catch (err: unknown) {
-      setError(formatError(err));
+      setError(formatFirebaseError(err, intl));
     } finally {
       setLoading(false);
     }
@@ -69,91 +70,95 @@ const SignUp: React.FC = () => {
   //     email.trim().length > 0 &&
   //     password.length >= 6 &&
   //     password === confirmPassword;
+  if (user) {
+    navigate("/profil", { replace: true });
+    return null;
+  }
 
   return (
     <div className="container sign-up-container">
-      {user ? (
-        <>{navigate("/profil", { replace: true })}</>
-      ) : (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-          }}
-          aria-label="auth-form"
-          id="form-auth"
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+        }}
+        aria-label="auth-form"
+        id="form-auth"
+      >
+        <h3>
+          <FormattedMessage
+            id="auth.signup.header"
+            defaultMessage="Registracija"
+          ></FormattedMessage>
+        </h3>
+        <label htmlFor="f-email">Email</label>
+        <input
+          type="email"
+          id="f-email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <label htmlFor="f-username">
+          <FormattedMessage
+            id="login.username"
+            defaultMessage="Korisnicko ime"
+          ></FormattedMessage>
+        </label>
+        <input
+          type="text"
+          id="f-username"
+          placeholder={intl.formatMessage({
+            id: "login.username",
+            defaultMessage: "Korisnicko ime",
+          })}
+          value={displayName}
+          onChange={(e) => setDisplayName(e.target.value)}
+        />
+
+        <label htmlFor="f-password">
+          <FormattedMessage id="login.password" defaultMessage="Lozinka" />
+        </label>
+        <input
+          type="password"
+          id="f-password"
+          placeholder={intl.formatMessage({
+            id: "login.password",
+            defaultMessage: "Lozinka",
+          })}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <label htmlFor="f-rpassword">
+          <FormattedMessage
+            id="login.password.repeat"
+            defaultMessage="Ponovi lozinku"
+          />
+        </label>
+        <input
+          type="password"
+          id="f-rpassword"
+          placeholder={intl.formatMessage({
+            id: "login.password.repeat",
+            defaultMessage: "Ponovi lozinku",
+          })}
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+        />
+
+        {error && <span style={{ color: "red" }}>{error}</span>}
+        <button
+          type="button"
+          onClick={handleSignup}
+          disabled={loading}
+          style={{ margin: "20px 0" }}
         >
-          <h3>
-            <FormattedMessage
-              id="auth.signup.header"
-              defaultMessage="Registracija"
-            ></FormattedMessage>
-          </h3>
-          <label htmlFor="f-email">Email</label>
-          <input
-            type="email"
-            id="f-email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <label htmlFor="f-username">
-            <FormattedMessage
-              id="login.username"
-              defaultMessage="Korisnicko ime"
-            ></FormattedMessage>
-          </label>
-          <input
-            type="text"
-            id="f-username"
-            placeholder={intl.formatMessage({
-              id: "login.username",
-              defaultMessage: "Korisnicko ime",
-            })}
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
-          />
-
-          <label htmlFor="f-password">
-            <FormattedMessage id="login.password" defaultMessage="Lozinka" />
-          </label>
-          <input
-            type="password"
-            id="f-password"
-            placeholder={intl.formatMessage({
-              id: "login.password",
-              defaultMessage: "Lozinka",
-            })}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <label htmlFor="f-rpassword">
-            <FormattedMessage
-              id="login.password.repeat"
-              defaultMessage="Ponovi lozinku"
-            />
-          </label>
-          <input
-            type="password"
-            id="f-rpassword"
-            placeholder={intl.formatMessage({
-              id: "login.password.repeat",
-              defaultMessage: "Ponovi lozinku",
-            })}
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-
-          <button type="button" onClick={handleSignup} disabled={loading}>
-            {loading ? (
-              <FormattedMessage id="auth.loading" defaultMessage="Loading..." />
-            ) : (
-              <FormattedMessage id="auth.signup" defaultMessage="Sign Up" />
-            )}
-          </button>
-
-          {error && <p style={{ color: "red" }}>{error}</p>}
-        </form>
-      )}
+          {loading ? (
+            <FormattedMessage id="auth.loading" defaultMessage="Loading..." />
+          ) : (
+            <FormattedMessage id="auth.signup" defaultMessage="Sign Up" />
+          )}
+        </button>
+      </form>
     </div>
   );
 };

@@ -11,6 +11,7 @@
 .profile-header {
   display: flex;
   justify-content: space-between;
+  margin: 10px;
 }
 
 .profile-container ul {
@@ -41,6 +42,9 @@
   background-color: var(--submit);
   border-radius: 5px;
   padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: var(--transition);
   &:hover {
     transform: scale(1.05);

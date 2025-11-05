@@ -47,5 +47,12 @@
   "error.priceRequired": "Price is required",
   "error.pricePositive": "Price must be a positive number",
 
-  "profile.appartments": "Your appartments"
+  "error.invalidCredentials":"Invalid username or password",
+
+  "error.emailRequired" : "Email is required",
+  "error.passwordRequired" : "Password is required",
+  "error.usernameRequired" : "Username is required",
+
+  "profile.appartments": "Your appartments",
+  "profile.active.appartments": "You have no active listings"
 }
