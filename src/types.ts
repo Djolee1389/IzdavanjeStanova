@@ -42,3 +42,10 @@ export interface CityCoordinates {
   lng: number;
   maxBounds: [LatLngTuple, LatLngTuple];
 }
+
+export type FormData= {
+  email: string;
+  displayName: string;
+  password: string;
+  confirmPassword: string;
+};

@@ -46,11 +46,14 @@
 
   "error.invalidCredentials": "Neispravan Email ili lozinka",
 
-  "error.emailRequired" : "Email adresa je obavezna",
-  "error.passwordRequired" : "Lozinka je obavezna",
-  "error.usernameRequired" : "Korisničko ime je obavezno",
+  "error.emailRequired": "Email adresa je obavezna",
+  "error.invalidEmail": "Neispravan format Email adrese",
+
+  "error.passwordRequired": "Lozinka je obavezna",
+  "error.usernameRequired": "Korisničko ime je obavezno",
+  "error.passwordsMismatch": "Lozinke se ne poklapaju",
+  "error.shortPassword": "Lozinka je prekratka",
 
   "profile.appartments": "Vasi apartmani",
   "profile.active.appartments": "Nemate aktivnih oglasa"
-
 }

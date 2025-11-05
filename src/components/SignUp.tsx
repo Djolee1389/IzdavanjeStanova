@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useNavigate } from "react-router-dom";
-import { formatFirebaseError } from "../utils/formatFirebaseError";
-
+import { useForm } from "react-hook-form";
 import { auth } from "../Firebase";
 import {
   createUserWithEmailAndPassword,
@@ -10,18 +9,27 @@ import {
   updateProfile,
 } from "firebase/auth";
 import type { User } from "firebase/auth";
+// import { formatFirebaseError } from "../utils/formatFirebaseError";
+import type { FormData } from "../types.ts";
 
 const SignUp: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [displayName, setDisplayName] = useState("");
   const [user, setUser] = useState<User | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const intl = useIntl();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    reset,
+  } = useForm<FormData>();
+
+  const password = watch("password");
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -29,91 +37,88 @@ const SignUp: React.FC = () => {
     return unsubscribe;
   }, []);
 
-  // const formatError = (err: unknown) => {
-  //   if (!err) return "Unknown error";
-  //   if (err instanceof Error) return err.message;
-  //   try {
-  //     return String(err);
-  //   } catch {
-  //     return "Unknown error";
-  //   }
-  // };
-
-  const handleSignup = async () => {
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
+  useEffect(() => {
+    if (user) {
+      navigate("/profil", { replace: true });
     }
-    setError(null);
+  }, [user, navigate]);
+
+  const onSubmit = async (data: FormData) => {
+    // setError(null);
     setLoading(true);
     try {
       const userCredential = await createUserWithEmailAndPassword(
         auth,
-        email.trim(),
-        password
+        data.email.trim(),
+        data.password
       );
       await updateProfile(userCredential.user, {
-        displayName: displayName.trim(),
+        displayName: data.displayName.trim(),
       });
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
-      setDisplayName("");
+      reset();
     } catch (err: unknown) {
-      setError(formatFirebaseError(err, intl));
+      // setError(formatFirebaseError(err, intl));
     } finally {
       setLoading(false);
     }
   };
 
-  //   const valid =
-  //     email.trim().length > 0 &&
-  //     password.length >= 6 &&
-  //     password === confirmPassword;
-  if (user) {
-    navigate("/profil", { replace: true });
-    return null;
-  }
-
   return (
     <div className="container sign-up-container">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-        }}
-        aria-label="auth-form"
-        id="form-auth"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} id="form-auth">
         <h3>
           <FormattedMessage
             id="auth.signup.header"
             defaultMessage="Registracija"
-          ></FormattedMessage>
+          />
         </h3>
+
         <label htmlFor="f-email">Email</label>
         <input
           type="email"
           id="f-email"
           placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          {...register("email", {
+            required: intl.formatMessage({
+              id: "error.emailRequired",
+              defaultMessage: "Email adresa je obavezna",
+            }),
+            pattern: {
+              value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+              message: intl.formatMessage({
+                id: "error.invalidEmail",
+                defaultMessage: "Neispravan format Email adrese",
+              }),
+            },
+          })}
         />
+        {errors.email && (
+          <span style={{ color: "red" }}>{errors.email.message}</span>
+        )}
+
         <label htmlFor="f-username">
           <FormattedMessage
             id="login.username"
-            defaultMessage="Korisnicko ime"
-          ></FormattedMessage>
+            defaultMessage="Korisničko ime"
+          />
         </label>
         <input
           type="text"
           id="f-username"
           placeholder={intl.formatMessage({
             id: "login.username",
-            defaultMessage: "Korisnicko ime",
+            defaultMessage: "Korisničko ime",
           })}
-          value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
+          {...register("displayName", {
+            required: intl.formatMessage({
+              id: "error.usernameRequired",
+              defaultMessage: "Korisnicko ime je obavezno",
+            }),
+          })}
         />
+        {errors.displayName && (
+          <span style={{ color: "red" }}>{errors.displayName.message}</span>
+        )}
 
         <label htmlFor="f-password">
           <FormattedMessage id="login.password" defaultMessage="Lozinka" />
@@ -125,9 +130,24 @@ const SignUp: React.FC = () => {
             id: "login.password",
             defaultMessage: "Lozinka",
           })}
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          {...register("password", {
+            required: intl.formatMessage({
+              id: "error.passwordRequired",
+              defaultMessage: "Lozinka je obavezna",
+            }),
+            minLength: {
+              value: 6,
+              message: intl.formatMessage({
+                id: "error.shortPassword",
+                defaultMessage: "Lozinka je prekratka",
+              }),
+            },
+          })}
         />
+        {errors.password && (
+          <span style={{ color: "red" }}>{errors.password.message}</span>
+        )}
+
         <label htmlFor="f-rpassword">
           <FormattedMessage
             id="login.password.repeat"
@@ -141,17 +161,22 @@ const SignUp: React.FC = () => {
             id: "login.password.repeat",
             defaultMessage: "Ponovi lozinku",
           })}
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          {...register("confirmPassword", {
+            validate: (value) =>
+              value === password ||
+              intl.formatMessage({
+                id: "error.passwordMismatch",
+                defaultMessage: "Lozinke se ne poklapaju",
+              }),
+          })}
         />
+        {errors.confirmPassword && (
+          <span style={{ color: "red" }}>{errors.confirmPassword.message}</span>
+        )}
 
-        {error && <span style={{ color: "red" }}>{error}</span>}
-        <button
-          type="button"
-          onClick={handleSignup}
-          disabled={loading}
-          style={{ margin: "20px 0" }}
-        >
+        {/* {errors && <span style={{ color: "red" }}>{errors}</span>} */}
+
+        <button type="submit" disabled={loading} style={{ margin: "20px 0" }}>
           {loading ? (
             <FormattedMessage id="auth.loading" defaultMessage="Loading..." />
           ) : (
